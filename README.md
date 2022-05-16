@@ -1,6 +1,6 @@
 # productivity-app
 
-🌱 Introducing: Pro🦆ive - the ultimate pro**duck**tivity app.
+🌱 Introducing: Pro🦆ive - the ultimate pro-**duck**-tivity app - _inspired by nature and animals_
 
 🌳 Creating a productivity app where users will be able to track their study time and progress.
 
