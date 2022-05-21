@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "user")
+@RequestMapping(path = "auth")
 public class UserAccountController {
     private final UserAccountService userAccountService;
 
@@ -42,9 +42,14 @@ public class UserAccountController {
 
     // @RequestBody indicates this parameter is received from a request body made to this
     // POST endpoint
-    @PostMapping("/add")
-    public void createUserAccount(@RequestBody UserAccount userAccount) {
-        userAccountService.createUserAccount(userAccount);
+    @PostMapping("/register")
+    public void registerUserAccount(@RequestBody UserAccount userAccount) {
+        userAccountService.registerUserAccount(userAccount);
+    }
+
+    @PostMapping("/login")
+    public void loginUserAccount(@RequestBody UserAccountLogin userAccountLogin) {
+        userAccountService.loginUserAccount(userAccountLogin);
     }
 
     // @RequestParam - to use parameters, (e.g. /edit/2?firstName=john&?email="john@gmail.com") specified

@@ -33,6 +33,11 @@ function LoginPage({ handleLogin }) {
   const navigate = useNavigate();
 
   const loginRequest = async () => {
+    if (!validateEmail(email)) {
+      alert('Email is invalid. Enter a valid email');
+      return;
+    }
+
     const loginDetails = {
       email: email,
       password: password,
@@ -47,21 +52,31 @@ function LoginPage({ handleLogin }) {
       body: JSON.stringify(loginDetails),
     };
 
-    const response = await fetch('/admin/auth/login', requestOptions);
+    const response = await fetch('/auth/login', requestOptions);
 
     if (response.status === 500) {
-      console.log('Not Successful');
+      alert('Incorrect password or email');
     } else if (response.status === 400) {
       alert('Incorrect email or password');
     } else if (response.status === 200) {
       const data = await response.json();
-      handleLogin(data.token);
-      navigate('/dashboard');
+      console.log('Worked: ', data);
+      // handleLogin(data.token);
+      navigate('/');
     }
   };
 
   const goToRegisterPage = () => {
     navigate('/register');
+  };
+
+  // Helper Functions
+  const validateEmail = (email) => {
+    return String(email)
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
   };
 
   return (
@@ -78,18 +93,58 @@ function LoginPage({ handleLogin }) {
       <Typography variant='h5' color='#000000'>
         Login
       </Typography>
-      <StyledTextField
+      <TextField
         id='standard-basic'
         label='Email'
         variant='standard'
-        sx={{ width: '300px', ':hover': { borderColor: '#000000' } }}
+        sx={{
+          width: '300px',
+          ':hover': { borderColor: '#000000' },
+          '& label.Mui-focused': {
+            color: '#000000',
+          },
+          '& .MuiInput-underline:after': {
+            borderBottomColor: '#000000',
+          },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#000000',
+            },
+            '&:hover fieldset': {
+              borderColor: '#000000',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#000000',
+            },
+          },
+        }}
         onChange={(e) => setEmail(e.target.value)}
       />
-      <StyledTextField
+      <TextField
         id='standard-basic'
         label='Password'
         variant='standard'
-        sx={{ width: '300px' }}
+        sx={{
+          width: '300px',
+          ':hover': { borderColor: '#000000' },
+          '& label.Mui-focused': {
+            color: '#000000',
+          },
+          '& .MuiInput-underline:after': {
+            borderBottomColor: '#000000',
+          },
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: '#000000',
+            },
+            '&:hover fieldset': {
+              borderColor: '#000000',
+            },
+            '&.Mui-focused fieldset': {
+              borderColor: '#000000',
+            },
+          },
+        }}
         onChange={(e) => setPassword(e.target.value)}
       />
       <Button

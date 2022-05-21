@@ -1,9 +1,14 @@
 package productive.app.v1.UserAccount;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.*;
 
+import productive.app.v1.Role.Role;
+
 @Entity // For Hibernate
-@Table  // References the Table in the DatabaseØ
+@Table  // References the Table in the Database
 public class UserAccount {
     // Part of Spring Data JPA
     @Id
@@ -23,16 +28,10 @@ public class UserAccount {
     private String lastName;
     private String email;
     private String password;
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Collection<Role> roles = new ArrayList<>();
 
     public UserAccount() {
-    }
-
-    public UserAccount(Long id, String firstName, String lastName, String email, String password) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
     }
 
     public UserAccount(String firstName, String lastName, String email, String password) {

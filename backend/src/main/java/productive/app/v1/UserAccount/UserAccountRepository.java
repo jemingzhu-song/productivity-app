@@ -29,4 +29,7 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Long> 
     */
     @Query(value = "SELECT * FROM user_account u WHERE u.email = ?1", nativeQuery = true)
     Optional<UserAccount> searchUserAccountByEmail(String email);
+
+    @Query(value = "SELECT * FROM user_account u WHERE u.email = ?1 and u.password = ?2", nativeQuery = true)
+    Optional<UserAccount> validateUserAccountLogin(String email, String password);
 }

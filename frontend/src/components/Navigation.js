@@ -18,7 +18,7 @@ function Navigation() {
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <StyledLink to='/'>
           <Typography variant='h6' component='div'>
-            🦆 Pro<span style={{ fontWeight: 'bold' }}>duc</span>tive
+            🦆 Pro<span style={{ fontWeight: 'bold' }}>duck</span>tive
           </Typography>
         </StyledLink>
         <Box>
