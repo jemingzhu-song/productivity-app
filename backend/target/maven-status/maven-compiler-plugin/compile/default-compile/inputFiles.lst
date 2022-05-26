@@ -1,6 +1,12 @@
 /Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/UserAccount/UserAccountService.java
+/Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/UserAccount/UserAccountAddRole.java
 /Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/UserAccount/UserAccountConfig.java
+/Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/UserAccount/UserAccountLogin.java
+/Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/Security/SecurityConfig.java
 /Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/ProductiveApplication.java
 /Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/UserAccount/UserAccount.java
 /Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/UserAccount/UserAccountRepository.java
 /Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/UserAccount/UserAccountController.java
+/Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/Filter/CustomAuthenticationFilter.java
+/Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/Role/Role.java
+/Users/jemingzhu-song/Development/productivity-app/backend/src/main/java/productive/app/v1/Role/RoleRepository.java

@@ -1,55 +1,67 @@
 package productive.app.v1.UserAccount;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import productive.app.v1.Role.Role;
+import productive.app.v1.Role.RoleRepository;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
 
 @Service
-public class UserAccountService {
+// @Transactional allows us to update values in our database using "getters" and "setters" in Java, rather than implementing
+// an @Query SQL statement to make the update
+@Transactional
+public class UserAccountService implements UserDetailsService {
     private final UserAccountRepository userAccountRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserAccountService(UserAccountRepository userAccountRepository) {
+    public UserAccountService(UserAccountRepository userAccountRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
         this.userAccountRepository = userAccountRepository;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<UserAccount> getAllUserAccounts() {
         return userAccountRepository.findAll();
     }
 
-    public void registerUserAccount(UserAccount userAccount) {
+    public UserAccount registerUserAccount(UserAccount userAccount) {
         // Custom function defined by UserAccountRepository
         Optional<UserAccount> userAccountEmail = userAccountRepository.searchUserAccountByEmail(userAccount.getEmail());
         if (userAccountEmail.isPresent()) {
             throw new IllegalStateException("Email Exists!");
         }
+        // Encode the User's Password before saving in Database
+        userAccount.setPassword(passwordEncoder.encode(userAccount.getPassword()));
         // Save the User Account to the database (by using userAccountRepository to interact with DB)
-        userAccountRepository.save(userAccount);
+        return userAccountRepository.save(userAccount);
     }
 
-    public void loginUserAccount(UserAccountLogin userAccountLogin) {
+    public UserAccount loginUserAccount(UserAccountLogin userAccountLogin) {
         // Check user email exists and is a valid account
-        Optional<UserAccount> userAccountEmail = userAccountRepository.searchUserAccountByEmail(userAccountLogin.getEmail());
-        if (!userAccountEmail.isPresent()) {
-            throw new IllegalStateException("Account not found! Email not associated with an account.");
-        }
+        UserAccount userAccountLoggedIn = userAccountRepository.searchUserAccountByEmail(userAccountLogin.getEmail()).orElseThrow(() 
+        -> new IllegalStateException("Account not found! Email not associated with an account."));;
         // Validate User's Login
-        Optional<UserAccount> validateLogin = userAccountRepository.validateUserAccountLogin(userAccountLogin.getEmail(), userAccountLogin.getPassword());
-        if (!validateLogin.isPresent()) {
-            throw new IllegalStateException("Password is incorrect. Try again");
-        }
+        userAccountLoggedIn.setPassword(passwordEncoder.encode(userAccountLoggedIn.getPassword()));
+        UserAccount validateLogin = userAccountRepository.validateUserAccountLogin(userAccountLogin.getEmail(), userAccountLogin.getPassword()).orElseThrow(() 
+        -> new IllegalStateException("Password is incorrect. Try again"));
+        return validateLogin;
     }
 
-    // @Transactional allows us to update values in our database using "getters" and "setters" in Java, rather than implementing
-    // an @Query SQL statement to make the update
-    @Transactional
     public void updateUserAccount(Long userId, String firstName, String lastName, String email, String password) {
         // Check user exists=
         UserAccount userAccount = userAccountRepository.findById(userId).orElseThrow(() 
@@ -85,11 +97,40 @@ public class UserAccountService {
         userAccountRepository.deleteById(userId);
     }
 
-    // @Override
-    // public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-    //     UserAccount userAccount = userAccountRepository.searchUserAccountByEmail(email).orElseThrow(() 
-    //     -> new IllegalStateException("User with email: " + email + "does not exist"));
-    //     return new org.springframework.security.core.userdetails.User();
+    // Save a Role
+    public Role saveRole(Role role) {
+        return roleRepository.save(role);
+    }
 
-    // }
+    // Assign a Role to a User Account
+    public void addRoleToUserAccount(String email, String roleName) {
+        UserAccount userAccount = userAccountRepository.searchUserAccountByEmail(email).orElseThrow(() 
+        -> new IllegalStateException("UserAccountService.addRoleToUserAccount() - User with email: " + email + " does not exist"));
+        Role role = roleRepository.findByName(roleName);
+        boolean result = userAccount.getRoles().add(role);
+        for (Role r : userAccount.getRoles()) {
+            System.out.println("Role: " + role.getName());
+        }
+    }
+
+    // Find the UserAccount given an Email
+    public UserAccount findUserAccountByEmail(String email) {
+        UserAccount userAccount = userAccountRepository.searchUserAccountByEmail(email).orElseThrow(() 
+        -> new IllegalStateException("UserAccountService.addRoleToUserAccount() - User with email: " + email + " does not exist"));
+        return userAccount;        
+    }
+
+    // This method belongs to the "UserDetailsService" Class (provided by Spring Security)
+    // Tutorial: 48min - 58min at: https://www.youtube.com/watch?v=VVn9OG9nfH0&t=
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        System.out.println("USERNAME: " + username);
+        UserAccount userAccount = userAccountRepository.searchUserAccountByEmail(username).orElseThrow(() 
+        -> new IllegalStateException("UserAccountService.loadUserByUsername() - User with email: " + username + " does not exist"));
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for (Role r : userAccount.getRoles()) {
+            authorities.add(new SimpleGrantedAuthority(r.getName()));
+        }
+        return new User(userAccount.getEmail(), userAccount.getPassword(), authorities);
+    }
 }

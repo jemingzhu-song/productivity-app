@@ -1,6 +1,6 @@
-productive/app/v1/UserAccount/UserAccount.class
 productive/app/v1/ProductiveApplication.class
-productive/app/v1/UserAccount/UserAccountConfig.class
 productive/app/v1/UserAccount/UserAccountRepository.class
 productive/app/v1/UserAccount/UserAccountController.class
 productive/app/v1/UserAccount/UserAccountService.class
+productive/app/v1/UserAccount/UserAccount.class
+productive/app/v1/UserAccount/UserAccountConfig.class

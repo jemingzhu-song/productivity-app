@@ -12,15 +12,7 @@ import productive.app.v1.Role.Role;
 public class UserAccount {
     // Part of Spring Data JPA
     @Id
-    @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "user_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.AUTO)
     // Putting an "@Transient" above any field/value will indicate that the field/value
     // will not be stored in the database as a column in a table.
     private Long id;
@@ -34,11 +26,12 @@ public class UserAccount {
     public UserAccount() {
     }
 
-    public UserAccount(String firstName, String lastName, String email, String password) {
+    public UserAccount(String firstName, String lastName, String email, String password, Collection<Role> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.roles = roles;
     }
 
     public Long getId() {
@@ -79,5 +72,13 @@ public class UserAccount {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
     }
 }

@@ -13,6 +13,7 @@ public class ProductiveApplication {
 		SpringApplication.run(ProductiveApplication.class, args);
 	}
 
+	// Injected into Security/SecurityConfig.java
 	@Bean
 	PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
