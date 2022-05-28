@@ -1,10 +1,18 @@
 import { Box, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import Countdown, { zeroPad, calcTimeDelta } from 'react-countdown';
 
 function TimerPage() {
-  const [timer, setTimer] = useState('30:00');
+  // React Countdown Timer Package: https://github.com/ndresx/react-countdown
+  // Default Timer is set to 30 minutes
+  const [timer, setTimer] = useState(Date.now() + 1000 * 10);
+  const [timerStoppedTime, setTimerStoppedTime] = useState(null);
+  const [timerStartedTime, setTimerStartedTime] = useState(null);
+  const [timerTotalPausedTime, setTotalPausedTime] = useState(0);
+  const [timerTotalTimeElapsed, setTotalTimeElapsed] = useState(0);
   const [mode, setMode] = useState('study');
   const [timerState, setTimerState] = useState('stopped');
+  const countdownRef = useRef();
 
   const changeMode = (event, mode) => {
     setMode(mode);
@@ -13,6 +21,54 @@ function TimerPage() {
   const changeTimerState = (event, state) => {
     console.log('Changed: ', state);
     setTimerState(state);
+  };
+
+  const startTimer = () => {
+    countdownRef.current.api.start();
+    setTimerStartedTime(Date.now());
+  };
+
+  const stopTimer = () => {
+    countdownRef.current.api.pause();
+    let now = Date.now();
+    console.log('Timer: ', timer);
+    if (timerStoppedTime === null) {
+      // console.log('Time Left: ', (timer - now) / 1000);
+      // console.log('Time Elapsed: ', (now - timerStartedTime) / 1000);
+      let elapsed = now - timerStartedTime;
+      setTotalTimeElapsed(elapsed);
+    } else {
+      let pausedTime = timerStartedTime - timerStoppedTime + timerTotalPausedTime;
+      let total = timerTotalPausedTime + (timerStartedTime - timerStoppedTime);
+      setTotalPausedTime(total);
+      // console.log('Time Left Again: ', (timer - now + pausedTime) / 1000);
+      // console.log('Time Elapsed: ', (now - timerStartedTime + timerTotalTimeElapsed) / 1000);
+      let elapsed = now - timerStartedTime + timerTotalTimeElapsed;
+      setTotalTimeElapsed(elapsed);
+    }
+    setTimerStoppedTime(now);
+    updateUserStudyTime();
+  };
+
+  const updateUserStudyTime = () => {};
+
+  const Completionist = () => (
+    <span style={{ fontFamily: 'Nunito', fontSize: '60px', color: '#FFFFFF', fontWeight: 'bold' }}>
+      Times Up!
+    </span>
+  );
+  const renderer = ({ minutes, seconds, completed }) => {
+    if (completed) {
+      // Render a completed state
+      return <Completionist />;
+    } else {
+      // Render a countdown
+      return (
+        <span>
+          {zeroPad(minutes)}:{zeroPad(seconds)}
+        </span>
+      );
+    }
   };
 
   return (
@@ -59,7 +115,13 @@ function TimerPage() {
             }}
             component='div'
           >
-            {timer}
+            <Countdown
+              ref={countdownRef}
+              date={timer}
+              autoStart={false}
+              controlled={false}
+              renderer={renderer}
+            />
           </Typography>
         </Box>
         <ToggleButtonGroup sx={{ height: '30px' }} value={timerState} exclusive onChange={changeTimerState}>
@@ -74,6 +136,7 @@ function TimerPage() {
                 ':hover': { backgroundColor: '#C9C9C9' },
               }}
               value='started'
+              onClick={startTimer}
             >
               <Typography
                 sx={{
@@ -98,6 +161,7 @@ function TimerPage() {
                 ':hover': { backgroundColor: '#C9C9C9' },
               }}
               value='stopped'
+              onClick={stopTimer}
             >
               <Typography
                 sx={{

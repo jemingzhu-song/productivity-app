@@ -6,6 +6,7 @@ import java.util.Collection;
 import javax.persistence.*;
 
 import productive.app.v1.Role.Role;
+import productive.app.v1.StudyBlock.StudyBlock;
 
 @Entity // For Hibernate
 @Table  // References the Table in the Database
@@ -22,6 +23,8 @@ public class UserAccount {
     private String password;
     @ManyToMany(fetch = FetchType.EAGER)
     private Collection<Role> roles = new ArrayList<>();
+    @OneToMany
+    private Collection<StudyBlock> studyBlocks = new ArrayList<>();
 
     public UserAccount() {
     }

@@ -4,30 +4,9 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
 function LoginPage({ handleLogin }) {
-  const StyledTextField = styled(TextField)({
-    '& label.Mui-focused': {
-      color: '#000000',
-    },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: '#000000',
-    },
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: '#000000',
-      },
-      '&:hover fieldset': {
-        borderColor: '#000000',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: '#000000',
-      },
-    },
-  });
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
@@ -43,16 +22,25 @@ function LoginPage({ handleLogin }) {
       password: password,
     };
 
+    // loginDetails body must be sent in x-www-form-urlencoded, not application/json
+    var formBody = [];
+    for (var property in loginDetails) {
+      var encodedKey = encodeURIComponent(property);
+      var encodedValue = encodeURIComponent(loginDetails[property]);
+      formBody.push(encodedKey + '=' + encodedValue);
+    }
+    formBody = formBody.join('&');
+
     const requestOptions = {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
         Accept: 'application/json',
       },
-      body: JSON.stringify(loginDetails),
+      body: formBody,
     };
 
-    const response = await fetch('/auth/login', requestOptions);
+    const response = await fetch('/login', requestOptions);
 
     if (response.status === 500) {
       alert('Incorrect password or email');
@@ -61,13 +49,9 @@ function LoginPage({ handleLogin }) {
     } else if (response.status === 200) {
       const data = await response.json();
       console.log('Worked: ', data);
-      // handleLogin(data.token);
+      handleLogin(data.accessToken);
       navigate('/');
     }
-  };
-
-  const goToRegisterPage = () => {
-    navigate('/register');
   };
 
   // Helper Functions

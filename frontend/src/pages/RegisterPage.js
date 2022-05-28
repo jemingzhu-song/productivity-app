@@ -47,7 +47,7 @@ function RegisterPage({ handleLogin }) {
       body: JSON.stringify(registerDetails),
     };
 
-    const response = await fetch('/auth/register', requestOptions);
+    const response = await fetch('/register', requestOptions);
 
     if (response.status === 500) {
       alert('Backend Error - Email Already Exists');
@@ -55,9 +55,10 @@ function RegisterPage({ handleLogin }) {
       alert(
         'An account with the entered email already exists! Please log in to the existing account, or sign up with a different email'
       );
-    } else if (response.status === 200) {
+    } else if (response.status === 201) {
+      // '201' means something was successfully created in the backend
       const data = await response.json();
-      handleLogin(data.token);
+      handleLogin(data.accessToken);
       navigate('/');
     }
   };
